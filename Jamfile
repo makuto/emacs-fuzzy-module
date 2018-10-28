@@ -1,0 +1,5 @@
+SubDir . ;
+
+Main macoyFuzzy$(SUFSHR) : fuzzy.c
+                           utils.c
+                  	   macoyFuzzy.c ;

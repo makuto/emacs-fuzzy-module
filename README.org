@@ -1,0 +1,19 @@
+* emacs-fuzzy-module
+An emacs module for doing fuzzy filtering of a list. 
+
+I created this because I was encountering performance problems with ELisp-based solutions like flx-ido. I figure native module performance should be much better.
+
+* Installation
+1. To build, make sure you have Jam installed: 
+: sudo apt install jam
+2. Open Jamrules and add the path to your ~emacs/src~ to the ~HDRS~ variable. Ensure there is a space between the ~;~ and your path
+3. Run ~jam~ in emacs-fuzzy-module directory
+4. Open macoyFuzzy.el and make the ~module-load~ path reference ~macoyFuzzy.so~ (wherever you built it)
+5. Evaluate macoyFuzzy.el
+6. Add the following to your .emacs:
+#+BEGIN_SRC emacs-lisp
+(require 'macoy-fuzzy-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(macoy-fuzzy-ido-mode 1)
+#+END_SRC

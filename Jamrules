@@ -1,0 +1,42 @@
+# Building Tests:
+# jam clean
+# jam -j4 -q
+
+# (if building the same target repeatedly, don't clean, if that wasn't obvious)
+
+##
+## Compiler
+##
+
+CC = gcc ;
+LINK = gcc ;
+LINKFLAGS = -shared ;
+
+if $(UNIX)      { SUFSHR = .so ; }
+else if $(NT)   { SUFSHR = .dll ; }
+		
+##
+## Compiler arguments
+##
+
+# Arguments used on all projects, regardless of any variables
+CCFLAGS = -ggdb3 -Wall -fPIC ;
+
+KEEPOBJS = true ; # This doesn't actually fix anything, though it seems like it should
+NOARSCAN = true ; # This actually fixes the problem
+#AR = ar rUu ; # I was thinking maybe the AR command was wrong (always outputting deterministically)
+               # It doesn't seem like this is the problem though
+AR = ar cr ;
+
+OPTIM = -O0 ;
+
+HDRS = . ../../3rdParty/repositories/emacs/src ;
+
+
+# Some helpful Jam commands
+# -q        : stop on failed target
+# -jN       : use N cores
+# -sVAR=VAL : Set VAR to VAL. Note that setting WINDOWS=false is the same as setting UNREAL=true,
+#              frustratingly
+# -dx       : print commands being used
+# -n        : don't actually run commands
