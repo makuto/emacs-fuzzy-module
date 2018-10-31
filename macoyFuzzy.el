@@ -60,6 +60,7 @@
   :group 'ido
   :global t)
 
+;; TODO: Sort list by last used? (duplicate whatever behavior the normal stuff does)
 (defun macoy-filter-list-fuzzy-ido (query items)
   (if (zerop (length query))
       items

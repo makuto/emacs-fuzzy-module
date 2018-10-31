@@ -187,3 +187,62 @@ static bool fuzzy_match_recursive(const char* pattern, const char* str, int* out
 		return false;
 	}
 }
+
+bool fuzzy_match_better(char const* pattern, char const* str, int* outScore)
+{
+	const int initialScore = 50;
+	const int firstCharacterValue = 10;
+	const int acronymCharacterValue = 8;
+
+	// First, make sure we have all characters in pattern
+	{
+		char const* patternIter = pattern;
+		char const* strIter = str;
+
+		while (*patternIter != '\0' && *strIter != '\0')
+		{
+			if (tolower(*patternIter) == tolower(*strIter))
+				++patternIter;
+			++strIter;
+		}
+
+		if (*patternIter != '\0')
+			return false;
+	}
+
+	// Score acronyms. We'll record the string length here too (this code should be fast)
+	int acronymScore = 0;
+	int strLength = 0;
+	{
+		char const* patternIter = pattern;
+		for (char const* strIter = str; *strIter != '\0' && *patternIter != '\0'; ++strIter)
+		{
+			++strLength;
+
+			if (tolower(*patternIter) == tolower(*strIter))
+			{
+				// First character matches get bonus
+				if (strIter == str)
+					acronymScore += firstCharacterValue;
+				// Handle underscore_delimited, camelCase, lisp-style, and file/dir/paths
+				else if (*(strIter - 1) == '_' || *(strIter - 1) == '/' || *(strIter - 1) == '-' ||
+				         (isupper(*patternIter) && islower(*(strIter - 1))))
+					acronymScore += acronymCharacterValue;
+
+				patternIter++;
+			}
+		}
+	}
+
+	// Score consecutive matches
+	int consecutiveMatchesScore = 0;
+
+	{
+	    // We're going to do this later
+	}
+
+	// Total score. Penalize longer strings
+	*outScore = (initialScore - strLength) + (acronymScore + consecutiveMatchesScore);
+
+	return true;
+}

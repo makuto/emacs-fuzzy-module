@@ -1,4 +1,11 @@
+// Created by Macoy Madson
+// GPL V3
+// https://github.com/makuto/emacs-fuzzy-module
+
 #include <emacs-module.h>
+
+// remove (for printf)
+#include <stdio.h>
 
 #include <stdlib.h>
 
@@ -6,6 +13,11 @@
 #include "utils.h"
 
 int plugin_is_GPL_compatible;
+
+// Uncomment for printf debug output
+//#define MACOY_FUZZY_DEBUG
+
+#define FUZZY_MATCH(query, string, outScore) fuzzy_match_better(query, string, outScore)
 
 // Note that for now this will affect the quality of the results if e.g. the best result is actually
 // match #2049. I'll have to make this good eventually
@@ -16,66 +28,6 @@ typedef struct MacoyFuzzyMatch
 	emacs_value string;
 	int score;
 } MacoyFuzzyMatch;
-
-// Return the value of the given element
-typedef int (*quicksort_GetValueFunc)(void* value);
-// Sorts in place (modifies array)
-// Modified from https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C (GNU FDL license)
-void quicksort(void** array, int length, quicksort_GetValueFunc getValue)
-{
-	if (length < 2)
-		return;
-
-	int pivot = getValue(array[length / 2]);
-
-	int i, j;
-	for (i = 0, j = length - 1;; i++, j--)
-	{
-		while (getValue(array[i]) < pivot)
-			i++;
-		while (getValue(array[j]) > pivot)
-			j--;
-
-		if (i >= j)
-			break;
-
-		void* temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	quicksort(array, i, getValue);
-	quicksort(array + i, length - i, getValue);
-}
-
-// Sorts in place (modifies array)
-// Modified from https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C (GNU FDL license)
-void quicksortReverse(void** array, int length, quicksort_GetValueFunc getValue)
-{
-	if (length < 2)
-		return;
-
-	int pivot = getValue(array[length / 2]);
-
-	int i, j;
-	for (i = 0, j = length - 1;; i++, j--)
-	{
-		while (getValue(array[i]) > pivot)
-			i++;
-		while (getValue(array[j]) < pivot)
-			j--;
-
-		if (i >= j)
-			break;
-
-		void* temp = array[i];
-		array[i] = array[j];
-		array[j] = temp;
-	}
-
-	quicksort(array, i, getValue);
-	quicksort(array + i, length - i, getValue);
-}
 
 int getFuzzyMatchValue(void* match)
 {
@@ -127,7 +79,7 @@ static emacs_value FmacoyFuzzyFilterVector_fun(emacs_env* env, ptrdiff_t nargs, 
 		copy_string_contents(env, currentString, &stringToCheckBuffer, &stringToCheckBufferSize);
 
 		int score = 0;
-		bool isMatch = fuzzy_match(queryBuffer, stringToCheckBuffer, &score);
+		bool isMatch = FUZZY_MATCH(queryBuffer, stringToCheckBuffer, &score);
 
 		free(stringToCheckBuffer);
 
@@ -144,22 +96,35 @@ static emacs_value FmacoyFuzzyFilterVector_fun(emacs_env* env, ptrdiff_t nargs, 
 		}
 		// Reached max number of matches
 		else
-		    break;
+			break;
 	}
-
-	free(queryBuffer);
 
 	if (numMatches)
 	{
 		MacoyFuzzyMatch** sortedMatches = sortFuzzyMatches(matches, numMatches);
 
+#ifdef MACOY_FUZZY_DEBUG
+		printf("\nQuery: %s\n", queryBuffer);
+		for (int i = 0; i < numMatches; ++i)
+		{
+			char* stringBuffer = NULL;
+			size_t stringBufferSize = 0;
+			copy_string_contents(env, sortedMatches[i]->string, &stringBuffer, &stringBufferSize);
+			printf("%s score: %d\n", stringBuffer, sortedMatches[i]->score);
+			free(stringBuffer);
+		}
+#endif
+
 		emacs_value matchesList = makeListFromFuzzyMatches(env, sortedMatches, numMatches);
 		free(sortedMatches);
+
+		free(queryBuffer);
 		return matchesList;
 	}
 	else
 	{
 		emacs_value emptyList[] = {};
+		free(queryBuffer);
 		return env->funcall(env, env->intern(env, "list"), 0, emptyList);
 	}
 }
@@ -176,7 +141,7 @@ static emacs_value FmacoyFuzzyScore_fun(emacs_env* env, ptrdiff_t nargs, emacs_v
 	copy_string_contents(env, args[1], &stringToCheckBuffer, &stringToCheckBufferSize);
 
 	int outScore = 0;
-	fuzzy_match(queryBuffer, stringToCheckBuffer, &outScore);
+	FUZZY_MATCH(queryBuffer, stringToCheckBuffer, &outScore);
 
 	free(queryBuffer);
 	free(stringToCheckBuffer);
@@ -197,7 +162,3 @@ int emacs_module_init(struct emacs_runtime* ert)
 	provide(env, "macoy-fuzzy");
 	return 0;
 }
-
-/* Integration
-Follow flx-ido defadvice for ido to replace (esp ido-set-matches-1)
-*/

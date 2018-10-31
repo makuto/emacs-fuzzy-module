@@ -54,3 +54,61 @@ void provide(emacs_env* env, const char* feature)
 
 	env->funcall(env, Qprovide, 1, args);
 }
+
+// Sorts in place (modifies array)
+// Modified from https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C (GNU FDL license)
+void quicksort(void** array, int length, quicksort_GetValueFunc getValue)
+{
+	if (length < 2)
+		return;
+
+	int pivot = getValue(array[length / 2]);
+
+	int i, j;
+	for (i = 0, j = length - 1;; i++, j--)
+	{
+		while (getValue(array[i]) < pivot)
+			i++;
+		while (getValue(array[j]) > pivot)
+			j--;
+
+		if (i >= j)
+			break;
+
+		void* temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	quicksort(array, i, getValue);
+	quicksort(array + i, length - i, getValue);
+}
+
+// Sorts in place (modifies array)
+// Modified from https://rosettacode.org/wiki/Sorting_algorithms/Quicksort#C (GNU FDL license)
+void quicksortReverse(void** array, int length, quicksort_GetValueFunc getValue)
+{
+	if (length < 2)
+		return;
+
+	int pivot = getValue(array[length / 2]);
+
+	int i, j;
+	for (i = 0, j = length - 1;; i++, j--)
+	{
+		while (getValue(array[i]) > pivot)
+			i++;
+		while (getValue(array[j]) < pivot)
+			j--;
+
+		if (i >= j)
+			break;
+
+		void* temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	quicksortReverse(array, i, getValue);
+	quicksortReverse(array + i, length - i, getValue);
+}

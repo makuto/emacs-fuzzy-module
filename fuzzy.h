@@ -38,3 +38,6 @@ bool fuzzy_match_simple(char const* pattern, char const* str);
 bool fuzzy_match(char const* pattern, char const* str, int* outScore);
 bool fuzzy_match_with_matches(char const* pattern, char const* str, int* outScore,
                               unsigned char* matches, int maxMatches);
+
+// Macoy's version
+bool fuzzy_match_better(char const* pattern, char const* str, int* outScore);
