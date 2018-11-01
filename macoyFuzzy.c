@@ -1,22 +1,24 @@
 // Created by Macoy Madson
-// GPL V3
+// MIT License
 // https://github.com/makuto/emacs-fuzzy-module
 
 #include <emacs-module.h>
-
-// remove (for printf)
-#include <stdio.h>
 
 #include <stdlib.h>
 
 #include "fuzzy.h"
 #include "utils.h"
 
-int plugin_is_GPL_compatible;
-
 // Uncomment for printf debug output
 //#define MACOY_FUZZY_DEBUG
 
+#ifdef MACOY_FUZZY_DEBUG
+#include <stdio.h>
+#endif
+
+int plugin_is_GPL_compatible;
+
+// For easy switching of which algorithm to use
 #define FUZZY_MATCH(query, string, outScore) fuzzy_match_better(query, string, outScore)
 
 // Note that for now this will affect the quality of the results if e.g. the best result is actually

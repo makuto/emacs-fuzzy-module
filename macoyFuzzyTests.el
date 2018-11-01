@@ -34,3 +34,7 @@
     ))
 
 (macoy-fuzzy-ido-mode 1)
+
+
+(message "%s" (macoy-filter-fuzzy-score "mac" "emacs.org"))
+(message "%s" (macoy-filter-fuzzy-score "mac" "macoyFuzzy.el"))

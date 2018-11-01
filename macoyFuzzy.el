@@ -52,6 +52,8 @@
 ;; TODO: Make relative
 (module-load "/home/macoy/Development/code/repositories/emacs-fuzzy-module/macoyFuzzy.so")
 (require 'macoy-fuzzy)
+;; TODO duplicate and remove
+(require 'flx-ido)
 
 (define-minor-mode macoy-fuzzy-ido-mode
   "Toggle Macoy fuzzy mode"
@@ -60,15 +62,30 @@
   :group 'ido
   :global t)
 
+
+;; (defadvice ido-exit-minibuffer (around flx-ido-reset activate)
+;;   "Remove flx properties after."
+;;   (let* ((obj (car ido-matches))
+;;          (str (if (consp obj)
+;;                   (car obj)
+;;                 obj)))
+;;     (when (and macoy-fuzzy-ido-mode str)
+;;       (remove-text-properties 0 (length str)
+;;                               '(face flx-highlight-face) str)))
+
+;;   ad-do-it)
+
 ;; TODO: Sort list by last used? (duplicate whatever behavior the normal stuff does)
 (defun macoy-filter-list-fuzzy-ido (query items)
   (if (zerop (length query))
-      items
+      (nreverse items) ;; Reverse because the history is in reverse
     (macoy-filter-list-fuzzy query (vconcat original-items))
     )
+  ;; TODO duplicate and remove (remember remove properties advice!)
+  ;; (flx-ido-decorate)
   )
 
-(defadvice ido-set-matches-1 (around flx-ido-set-matches-1 activate compile)
+(defadvice ido-set-matches-1 (around macoy-fuzzy-ido-set-matches-1 activate compile)
   "Choose between the regular ido-set-matches-1 and macoy-fuzzy-ido-match"
   (if (not macoy-fuzzy-ido-mode)
       ad-do-it
