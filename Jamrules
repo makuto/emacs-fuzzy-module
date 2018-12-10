@@ -30,7 +30,7 @@ AR = ar cr ;
 
 OPTIM = -O0 ;
 
-HDRS = . ../../3rdParty/repositories/emacs/src ;
+HDRS = . ../emacs/emacs/src ;
 
 
 # Some helpful Jam commands

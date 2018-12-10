@@ -17,3 +17,9 @@ I created this because I was encountering performance problems with ELisp-based 
 (ido-everywhere 1)
 (macoy-fuzzy-ido-mode 1)
 #+END_SRC
+* Building on Windows
+~env JAM_TOOLSET=MINGW ../../nonRepos/jam-2.6/jam.exe -j4 -q~
+gcc -c fuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
+gcc -c utils.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
+gcc -c macoyFuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
+gcc -shared -o macoyFuzzy.dll fuzzy.o utils.o macoyFuzzy.o

@@ -41,7 +41,7 @@
 
 ;; You must have compiled your Emacs with --with-modules for it to support modules.
 ;; Add the following code to your init file:
-;;
+;;     (setq macoy-fuzzy-library-location "path/to/macoyFuzzy[.dll|.so]")
 ;;     (require 'macoy-fuzzy-ido)
 ;;     (ido-mode 1)
 ;;     (ido-everywhere 1)
@@ -50,7 +50,10 @@
 ;;; Code:
 
 ;; TODO: Make relative
-(module-load "/home/macoy/Development/code/repositories/emacs-fuzzy-module/macoyFuzzy.so")
+(when macoy-fuzzy-library-location
+  (module-load macoy-fuzzy-library-location)
+  )
+
 (require 'macoy-fuzzy)
 ;; TODO duplicate and remove
 (require 'flx-ido)
@@ -95,5 +98,12 @@
     ))
 
 (provide 'macoy-fuzzy-ido)
+
+;;
+;; Reference
+;; (setq macoy-fuzzy-library-location "d:/Development/code/repositories/emacs-fuzzy-module/macoyFuzzy.dll")
+;; (load-file "d:/Development/code/repositories/emacs-fuzzy-module/macoyFuzzy.el")
+;; (require 'macoy-fuzzy-ido)
+;; (macoy-fuzzy-ido-mode 1)
 
 ;;; macoyFuzzy.el ends here

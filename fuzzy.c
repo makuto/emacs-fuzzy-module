@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FUZZY_MATCH_DEBUG
+/* #define FUZZY_MATCH_DEBUG */
 
 #ifdef FUZZY_MATCH_DEBUG
 #include <stdio.h>
