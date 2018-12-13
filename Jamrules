@@ -30,8 +30,24 @@ AR = ar cr ;
 
 OPTIM = -O0 ;
 
-HDRS = . ../emacs/emacs/src ;
+if $(EMACS_SRC_DIR)
+{
+	HDRS = . $(EMACS_SRC_DIR) ;
+}
+else
+{
+	HDRS = . ../../3rdParty/repositories/emacs/src ;
+}
 
+# E.g.
+# jam -j4 -q -sCROSS_COMPILE_WINDOWS=true
+if $(CROSS_COMPILE_WINDOWS)
+{
+	CC = x86_64-w64-mingw32-gcc ;
+	LINK = x86_64-w64-mingw32-gcc ;
+	AR = x86_64-w64-mingw32-ar ;
+	SUFSHR = .dll ;
+}
 
 # Some helpful Jam commands
 # -q        : stop on failed target

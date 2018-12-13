@@ -7,6 +7,7 @@ I created this because I was encountering performance problems with ELisp-based 
 1. To build, make sure you have Jam installed: 
 : sudo apt install jam
 2. Open Jamrules and add the path to your ~emacs/src~ to the ~HDRS~ variable. Ensure there is a space between the ~;~ and your path
+You can also run ~jam -sEMACS_SRC_DIR=path/to/your/emacs/src~ instead (ignore step 3).
 3. Run ~jam~ in emacs-fuzzy-module directory
 4. Open macoyFuzzy.el and make the ~module-load~ path reference ~macoyFuzzy.so~ (wherever you built it)
 5. Evaluate macoyFuzzy.el
@@ -18,8 +19,14 @@ I created this because I was encountering performance problems with ELisp-based 
 (macoy-fuzzy-ido-mode 1)
 #+END_SRC
 * Building on Windows
+The easiest way to build is to use Linux and cross compile via mingw64. To do this, just set ~CROSS_COMPILE_WINDOWS~ when building to automatically use the mingw toolset:
+~jam -sCROSS_COMPILE_WINDOWS=true~
+
+If you don't have jam, you can build things manually (this list may get out of sync):
+- ~gcc -c fuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src~
+- ~gcc -c utils.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src~
+- ~gcc -c macoyFuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src~
+- ~gcc -shared -o macoyFuzzy.dll fuzzy.o utils.o macoyFuzzy.o~
+
+If you do have Jam but it complains about the environment, set the environment first, e.g. this is what I did:
 ~env JAM_TOOLSET=MINGW ../../nonRepos/jam-2.6/jam.exe -j4 -q~
-gcc -c fuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
-gcc -c utils.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
-gcc -c macoyFuzzy.c -ggdb3 -Wall -fPIC -O0  -I. -I. -I../emacs/emacs/src
-gcc -shared -o macoyFuzzy.dll fuzzy.o utils.o macoyFuzzy.o
